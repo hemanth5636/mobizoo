@@ -119,7 +119,7 @@ public class HomeScreen extends AppCompatActivity
         UserSessionDetails obj = new UserSessionDetails();
         obj.initilisePrefer(UserSessionDetails.USER_PREFER, this.getApplicationContext());
         Toast.makeText(this, obj.getName()+obj.getEmail()+"jj", Toast.LENGTH_LONG).show();
-        nav_email.setText("kjdfg");
+        nav_email.setText(obj.getEmail());
         nav_name.setText(obj.getName());
 
         if(TextUtils.isEmpty(obj.getMobile()))
