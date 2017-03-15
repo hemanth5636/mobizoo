@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_home_screen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@color/common_google_signin_btn_text_light_focused"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.jpmc.hemanth.mobizoo.activities.HomeScreen"
+    tools:showIn="@layout/app_bar_home_screen">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/toolbar"
+            android:background="?attr/colorPrimary"
+            android:elevation="6dp"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+        <android.support.v4.view.ViewPager
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+        </android.support.v4.view.ViewPager>
+
+    </LinearLayout>
+</RelativeLayout>

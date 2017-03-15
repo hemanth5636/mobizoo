@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1031534749642",
+    "project_id": "firebase-mobizoo"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031534749642:android:2df92893b7034c51",
+        "android_client_info": {
+          "package_name": "com.jpmc.hemanth.mobizoo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031534749642-l4a5d5m2l123nd3c8pa47p98e8vck8uh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jpmc.hemanth.mobizoo",
+            "certificate_hash": "56DFACDBF3A4638C2B2090827E289DD531339468"
+          }
+        },
+        {
+          "client_id": "1031534749642-ebvslp5ml67294iph5b1rp9p6n25dg81.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSIHm3rymDhjbz2edPRsJaRwbxlTX6sZY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
