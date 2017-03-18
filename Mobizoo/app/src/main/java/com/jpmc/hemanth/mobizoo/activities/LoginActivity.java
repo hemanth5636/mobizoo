@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -22,6 +28,13 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.jpmc.hemanth.mobizoo.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Map;
+
+import utilities.Constants;
+import utilities.MySingleton;
 import utilities.UserSessionDetails;
 
 
@@ -92,18 +105,60 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            Toast.makeText(this, acct.getDisplayName()+" "+acct.getEmail(), Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, HomeScreen.class);
+            JSONObject postData = null;
+            try {
+                postData = new JSONObject();
+                postData.put("email", acct.getEmail());
+                postData.put("first_name",acct.getDisplayName());
+                postData.put("profile_pic_url", acct.getPhotoUrl().toString());
+                postData.put("user_type",0);
+            } catch (JSONException error) {
+                Toast.makeText(getApplicationContext(), "json error "+error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, Constants.LOGIN_URL, postData, new Response.Listener<JSONObject>() {
+                 @Override
+                 public void onResponse(JSONObject jsonObject) {
+                     try {
 
-            UserSessionDetails obj = new UserSessionDetails();
-            obj.initilisePrefer(UserSessionDetails.USER_PREFER, this.getApplicationContext());
-            obj.loginUser(acct.getDisplayName(),acct.getEmail(), acct.getPhotoUrl().toString());
+                         boolean success = jsonObject.getBoolean("success");
+                         if (success) {
+                             JSONObject usrObj = jsonObject.getJSONObject("user");
+
+                             UserSessionDetails obj = new UserSessionDetails();
+                             obj.initilisePrefer(UserSessionDetails.USER_PREFER, getApplicationContext());
+                             obj.loginUser(usrObj.getString("first_name"),usrObj.getString("email"),usrObj.getString("profile_pic_url"));
+                             if(!jsonObject.getBoolean("new_user"))
+                                 obj.saveMobile(usrObj.getString("mobile"));
+                             Log.e("url",usrObj.getString("profile_pic_url"));
+                             if (!jsonObject.getBoolean("new_user")) {
+                                 Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+                                 intent.putExtra("new_user", jsonObject.getBoolean("new_user"));
+                                 getApplicationContext().startActivity(intent);
+                             }
+                             else {
+                                 Intent intent = new Intent(getApplicationContext(), EditUserDetails.class);
+                                 intent.putExtra("new_user", jsonObject.getBoolean("new_user"));
+                                 startActivity(intent);
+                             }
+
+                         }
+                         else {
+                             Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_login),jsonObject.getString("details"),Snackbar.LENGTH_LONG);
+                         }
+                     } catch (JSONException e) {
+                         Toast.makeText(getApplicationContext(), "json exception"+e.getMessage(), Toast.LENGTH_LONG).show();
+                     }
+                 }
+             }, new Response.ErrorListener() {
+                 @Override
+                 public void onErrorResponse(VolleyError error) {
+                     Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_login),"no network connection"+error.getMessage(),Snackbar.LENGTH_LONG);
+                 }
+             })
+             ;
+            MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest);
 
 
-            intent.putExtra("name",acct.getDisplayName());
-            intent.putExtra("email",acct.getEmail());
-
-            startActivity(intent);
             // mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
             //updateUI(true);
             //Intent intent = new Intent(this, ProfileActivity.class);

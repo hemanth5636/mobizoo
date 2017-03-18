@@ -21,7 +21,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="197dp"
-        android:id="@+id/editText" />
+        android:id="@+id/editText_otp" />
 
     <TextView
         android:text="Verify OTP"
@@ -29,7 +29,7 @@
         android:textColor="@color/colorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/editText"
+        android:layout_alignBottom="@+id/editText_otp"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="116dp"
         android:id="@+id/textView" />
@@ -38,13 +38,13 @@
         android:text="Submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editText"
+        android:layout_below="@+id/editText_otp"
         android:textColor="@color/cardview_light_background"
         android:background="@color/colorPrimary"
-        android:layout_alignEnd="@+id/editText"
+        android:layout_alignEnd="@+id/editText_otp"
         android:layout_marginEnd="37dp"
         android:layout_marginTop="58dp"
-        android:id="@+id/button3" />
+        android:id="@+id/button_verfy" />
 
     <Button
         android:text="Resend OTP"
@@ -53,8 +53,8 @@
         android:padding="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/button3"
-        android:layout_alignStart="@+id/editText"
+        android:layout_alignTop="@+id/button_verfy"
+        android:layout_alignStart="@+id/editText_otp"
         android:layout_marginStart="31dp"
-        android:id="@+id/button4" />
+        android:id="@+id/button_resend" />
 </RelativeLayout>
