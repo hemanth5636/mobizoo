@@ -1,6 +1,5 @@
 import random
-import urllib.request
-import urllib.parse
+
 
 from django.conf.urls import url
 from django.contrib.auth import authenticate, login, logout
@@ -46,7 +45,7 @@ class UserResource(ModelResource):
             url(r"^(?P<resource_name>%s)/is_logged_in%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('isLoggedIn'), name="api_isloggedin"),
-            url(r"^(?P<resource_name>%s)/logput%s$" %
+            url(r"^(?P<resource_name>%s)/logout%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('logput'), name="api_logout"),
             url(r"^(?P<resource_name>%s)/resend_otp%s$" %
@@ -58,18 +57,33 @@ class UserResource(ModelResource):
             url(r"^(?P<resource_name>%s)/verify_otp%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('verify_otp'), name="api_verify_otp"),
+            url(r"^(?P<resource_name>%s)/fetch_user_details%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('fetch_user_details'), name="api_fetch_user_details"),
+
     ]
+
+    def fetch_user_details(self, request, **kwargs):
+        if request.user.is_authenticated():
+            user = User.objects.get(user=request.user)
+            bundle = UserResource().build_bundle(obj=user, request=request)
+            bundle = UserResource().full_dehydrate(bundle=bundle)
+            return self.create_response(request, {"success": True,
+                                                  "user": bundle})
+        else:
+            return self.create_response(request, {"success": False,
+                                                  "details": "user not authenticated"})
 
     def sendSMS(self, numbers, sender, message):
         hashCode = "b54aae2ddf1e0baf696ac964e7e161931739c78ab8deab30736ab346c532a9ed"
         uname = "hemanth5636@gmail.com"
-        data = urllib.parse.urlencode({'username': uname, 'hash': hashCode, 'numbers': numbers,
-                                       'message': message, 'sender': sender})
-        data = data.encode('utf-8')
-        request = urllib.request.Request("http://api.textlocal.in/send/?")
-        f = urllib.request.urlopen(request, data)
-        fr = f.read()
-        return (fr)
+        #data = urllib.parse.urlencode({'username': uname, 'hash': hashCode, 'numbers': numbers,
+         #                              'message': message, 'sender': sender})
+        #data = data.encode('utf-8')
+        #request = urllib.request.Request("http://api.textlocal.in/send/?")
+        #f = urllib.request.urlopen(request, data)
+        #fr = f.read()
+        #return (fr)
 
     def verify_otp(self, request, **kwargs):
         if request.user.is_authenticated():
@@ -77,15 +91,15 @@ class UserResource(ModelResource):
             try:
                 user = User.objects.get(user=request.user)
             except User.DoesNotExist:
-                return self.create_response(request, {"succes":False,
+                return self.create_response(request, {"success":False,
                                                       "details":"unauthorised user"})
             if user.otp == request.GET.get("otp"):
                 user.otp_verified = True
                 user.save()
-                return self.create_response(request, {"succes":True,
+                return self.create_response(request, {"success":True,
                                                       "user": UserResource().full_dehydrate(UserResource().build_bundle(obj=user))})
             else:
-                return self.create_response(request, {"succes":False,
+                return self.create_response(request, {"success":False,
                                                       "details":"Incorrect OTP"})
 
     def resend_otp(self, request, **kwargs):
