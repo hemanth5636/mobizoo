@@ -58,7 +58,7 @@ public class Add_bank_details extends AppCompatActivity implements View.OnClickL
                 progressDialog.setMessage("saving details...");
                 progressDialog.show();
                 JSONObject postObj = new JSONObject();
-                postObj.put("holser_name", holderName.getText());
+                postObj.put("holder_name", holderName.getText());
                 postObj.put("account_no", accountNumber.getText());
                 postObj.put("ifsc_code", ifscCode.getText());
 

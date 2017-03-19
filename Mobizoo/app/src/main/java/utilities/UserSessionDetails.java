@@ -17,6 +17,8 @@ public class UserSessionDetails {
     public final static int PRIVATE_MODE = 0;
     public final static String IS_LOGGED_IN = "is_logged_in";
     public final static String MOBILE = "mobile";
+    public final static String SESSION_KEY = "sessionKey";
+    final static String ID = "id";
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -28,11 +30,17 @@ public class UserSessionDetails {
         editor = sharedPreferences.edit();
     }
 
-    public void loginUser(String name, String email, String img_url) {
+    public  String getSessionKey() {
+        return sharedPreferences.getString(SESSION_KEY, "");
+    }
+
+    public void loginUser(String name, String email, String img_url, String sessionkey) {
         editor.putString(NAME,name);
         editor.putString(EMAIL, email);
         editor.putString(IMG_URL, img_url);
         editor.putBoolean(IS_LOGGED_IN, true);
+        editor.putString(SESSION_KEY, sessionkey);
+
         editor.commit();
 
     }

@@ -25,7 +25,8 @@
         <activity android:name=".activities.EditUserDetails" />
         <activity android:name=".activities.Otp_verify" />
         <activity android:name=".activities.Add_bank_details" />
-        <activity android:name=".activities.Payment_Success_Screen"></activity>
+        <activity android:name=".activities.Payment_Success_Screen" />
+        <activity android:name=".activities.ManageBankDetailsActivity"></activity>
     </application>
 
 </manifest>

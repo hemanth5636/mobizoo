@@ -123,10 +123,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                          boolean success = jsonObject.getBoolean("success");
                          if (success) {
                              JSONObject usrObj = jsonObject.getJSONObject("user");
-
+                            Log.e("response", jsonObject.toString());
                              UserSessionDetails obj = new UserSessionDetails();
                              obj.initilisePrefer(UserSessionDetails.USER_PREFER, getApplicationContext());
-                             obj.loginUser(usrObj.getString("first_name"),usrObj.getString("email"),usrObj.getString("profile_pic_url"));
+                             obj.loginUser(usrObj.getString("first_name"),usrObj.getString("email"),usrObj.getString("profile_pic_url"), jsonObject.getString("sessionKey"));
                              if(!jsonObject.getBoolean("new_user"))
                                  obj.saveMobile(usrObj.getString("mobile"));
                              Log.e("url",usrObj.getString("profile_pic_url"));
