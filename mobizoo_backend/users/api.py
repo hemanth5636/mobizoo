@@ -47,7 +47,7 @@ class UserResource(ModelResource):
                 self.wrap_view('isLoggedIn'), name="api_isloggedin"),
             url(r"^(?P<resource_name>%s)/logout%s$" %
                 (self._meta.resource_name, trailing_slash()),
-                self.wrap_view('logput'), name="api_logout"),
+                self.wrap_view('logout'), name="api_logout"),
             url(r"^(?P<resource_name>%s)/resend_otp%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('resend_otp'), name="api_resend_otp"),
@@ -64,8 +64,12 @@ class UserResource(ModelResource):
     ]
 
     def fetch_user_details(self, request, **kwargs):
+        if request.session.test_cookie_worked():
+            print ("The test cookie worked!!!")
+            request.session.delete_test_cookie()
+       # print (request.user.first_name)
         if request.user.is_authenticated():
-            user = User.objects.get(user=request.user)
+            user = User.objects.get(id=request.user.id)
             bundle = UserResource().build_bundle(obj=user, request=request)
             bundle = UserResource().full_dehydrate(bundle=bundle)
             return self.create_response(request, {"success": True,
@@ -86,6 +90,7 @@ class UserResource(ModelResource):
         #return (fr)
 
     def verify_otp(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
         if request.user.is_authenticated():
             user=None
             try:
@@ -266,6 +271,40 @@ class BankAccountDetailsResource(ModelResource):
             'user': ALL_WITH_RELATIONS,
             'bank': ALL_WITH_RELATIONS
         }
+
+    def get_object_list(self, request):
+        if request.user.is_authenticated():
+            return super(BankAccountDetailsResource, self).get_object_list(request).filter(user=request.user)
+        else:
+            return super(BankAccountDetailsResource, self).get_object_list(request)
+
+    def override_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/save_bank%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('save_bank'), name="api_save_bank"),
+        ]
+
+    def save_bank(self, request, **kwargs):
+        self.method_check(request, allowed=['post'])
+        if request.user.is_authenticated():
+            data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+            bank = BankAccountDetails()
+            bank.account_no = data.get('account_no')
+            bank.holder_name = data.get('holder_name')
+            bank.ifsc_code = data.get('ifsc_code')
+            bank.account_state = 0
+            bank.bank_id = 1
+            bank.save()
+            bundle = BankAccountDetailsResource().build_bundle(obj=bank)
+            bundle = BankAccountDetailsResource().full_dehydrate(bundle=bundle)
+            return self.create_response(request, {"success":True,
+                                                  "details":"bank details added successfully",
+                                                  "data":bundle
+                                                  })
+        else :
+            return self.create_response(request, {"success":False,
+                                                  "details":"user not authenticated, please login again"})
 
 
 class UpiDetailsResource(ModelResource):

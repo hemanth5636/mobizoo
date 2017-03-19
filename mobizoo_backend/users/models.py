@@ -35,7 +35,7 @@ class User(AbstractBaseUser):
     details = models.CharField(max_length=500, null=True)
     otp_verified = models.BooleanField(default=False)
     otp = models.CharField(max_length=4, null=True)
-    gender = models.SmallIntegerField(choices=GENDER_TYPES, null=True)
+    gender = models.SmallIntegerField(choices=GENDER_TYPES, null=True, default=0)
     dob = models.DateField(null=True)
     joined = models.DateTimeField(auto_now=True, null=False)
     account_state_type = models.SmallIntegerField(choices=ACCOUNT_STATE_TYPES, default=INACTIVE)
