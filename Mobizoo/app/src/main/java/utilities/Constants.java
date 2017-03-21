@@ -13,4 +13,6 @@ public class Constants {
     public static final String RESEND_OTP_URL = BASE_URL+"/api/user_api/user/resend_otp/?format=json&type=user";
     public static final String SAVE_BANK_DETAILS_URL = BASE_URL+"/api/user_api/bank_details/save_bank/?format=json&type=user";
     public static final String FETCH_BANKS_URL = BASE_URL+"/api/user_api/bank_details/?format=json&type=user";
+
+    public static final String FETCH_BILL_URL = BASE_URL;
 }

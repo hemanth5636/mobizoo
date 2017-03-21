@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -20,7 +21,12 @@ import com.jpmc.hemanth.mobizoo.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import utilities.Constants;
+import utilities.MySingleton;
+import utilities.UserSessionDetails;
 
 public class Add_bank_details extends AppCompatActivity implements View.OnClickListener {
     EditText holderName, accountNumber, ifscCode;
@@ -44,15 +50,19 @@ public class Add_bank_details extends AppCompatActivity implements View.OnClickL
         if(v.getId() == R.id.button_bank_submit) {
             if (TextUtils.isEmpty(holderName.getText())) {
                 Snackbar snackbar= Snackbar.make(findViewById(R.id.activity_add_bank_details), "please enter Holder's Name", Snackbar.LENGTH_LONG);
+                snackbar.show();
             }
             if (TextUtils.isEmpty(accountNumber.getText())) {
                 Snackbar snackbar= Snackbar.make(findViewById(R.id.activity_add_bank_details), "please enter Account Number", Snackbar.LENGTH_LONG);
+                snackbar.show();
             }
             if (accountNumber.getText().length() != 11 ) {
                 Snackbar snackbar= Snackbar.make(findViewById(R.id.activity_add_bank_details), "account should have 11 Digits", Snackbar.LENGTH_LONG);
+                snackbar.show();
             }
             if (TextUtils.isEmpty(ifscCode.getText())) {
                 Snackbar snackbar= Snackbar.make(findViewById(R.id.activity_add_bank_details), "please enter IFSC Code", Snackbar.LENGTH_LONG);
+                snackbar.show();
             }
             try {
                 progressDialog.setMessage("saving details...");
@@ -79,8 +89,21 @@ public class Add_bank_details extends AppCompatActivity implements View.OnClickL
                     public void onErrorResponse(VolleyError error) {
                         progressDialog.dismiss();
                         Snackbar snackbar= Snackbar.make(findViewById(R.id.activity_add_bank_details), "No network connection", Snackbar.LENGTH_LONG);
+                        snackbar.show();
                     }
-                });
+                })
+                {
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        Map<String, String> headers = new HashMap<>();
+                        UserSessionDetails obj = new UserSessionDetails();
+                        obj.initilisePrefer(UserSessionDetails.USER_PREFER, getApplicationContext());
+                        Log.e("sessionid",obj.getSessionKey());
+                        headers.put("Cookie","sessionid="+obj.getSessionKey());
+                        return headers;
+
+                    }};
+                MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest);
             } catch (JSONException e) {
                 progressDialog.dismiss();
                 Log.e("save bank detasils"," json error" + e.getMessage());
