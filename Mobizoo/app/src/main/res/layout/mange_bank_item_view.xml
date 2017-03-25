@@ -2,21 +2,25 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:paddingTop="7dp"
+    android:layout_height="wrap_content">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+
         android:orientation="vertical">
         <android.support.v7.widget.CardView
             android:id="@+id/card_view"
+
             android:layout_width="match_parent"
-            android:paddingBottom="3dp"
+
             android:layout_height="wrap_content"
             >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
@@ -46,13 +50,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/manage_bank_account_no"
-            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+            android:textColor="@color/common_google_signin_btn_text_light_default" />
         <View android:background="#d3dcd3" android:layout_width="fill_parent" android:layout_height="1.0dip"
             android:layout_marginTop="8dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_marginTop="5dp"
+            android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -60,10 +65,12 @@
                 android:text="Acitivate Account"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+
                 android:id="@+id/switch1"
+                android:layout_weight="1"
                 android:textSize="20dp"
                 android:gravity="center"
-                android:layout_weight="1" />
+                 />
             <View android:background="#d3dcd3" android:layout_width="1.0dp" android:layout_height="match_parent"
                 android:layout_marginTop="8dp"/>
 
@@ -73,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/button_delete_bank"
                 android:layout_gravity="right"
-                android:layout_marginLeft="50dp"
+
                 />
         </LinearLayout>
     </LinearLayout>

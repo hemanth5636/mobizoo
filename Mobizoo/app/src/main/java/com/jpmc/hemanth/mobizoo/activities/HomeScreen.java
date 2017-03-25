@@ -133,8 +133,7 @@ public class HomeScreen extends AppCompatActivity
             @Override
             public void onResponse(ImageLoader.ImageContainer response, boolean isImmediate) {
                 nav_image.setImageBitmap(response.getBitmap());
-                nav_email.setText("kjdfg");
-                nav_name.setText("dfdf");
+
             }
 
             @Override
@@ -231,8 +230,9 @@ public class HomeScreen extends AppCompatActivity
             // Handle the camera action
             Intent intent=new Intent(this, EditUserDetails.class);
             startActivity(intent);
-        } else if (id == R.id.nav_gallery) {
-
+        } else if (id == R.id.nav_manage_banks) {
+                Intent intent = new Intent(this,BillActivity.class);
+                startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
