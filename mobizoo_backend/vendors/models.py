@@ -70,12 +70,13 @@ class Bill(models.Model):
 
 
 class BillingItems(models.Model):
-    billing = models.ForeignKey(Bill, on_delete=models.CASCADE)
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
     product_name = models.CharField(max_length=50, null=True)
     product_details = models.CharField(max_length=100, null=True)
     purchase_quantity = models.CharField(max_length=10, null=True)
-    price_per = models.CharField(max_length=10, null=True)
+    price_per = models.SmallIntegerField( null=True)
     product_category = models.CharField(max_length=70, null=True)
     discount = models.CharField(max_length=10, null=True)
     time_stamp = models.DateTimeField(auto_now=True)
+    total_price = models.SmallIntegerField(null=True)
 

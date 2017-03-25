@@ -295,6 +295,7 @@ class BankAccountDetailsResource(ModelResource):
             bank.ifsc_code = data.get('ifsc_code')
             bank.account_state = 0
             bank.bank_id = 1
+            bank.user = request.user
             bank.save()
             bundle = BankAccountDetailsResource().build_bundle(obj=bank)
             bundle = BankAccountDetailsResource().full_dehydrate(bundle=bundle)
