@@ -60,6 +60,9 @@ class UserResource(ModelResource):
             url(r"^(?P<resource_name>%s)/fetch_user_details%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('fetch_user_details'), name="api_fetch_user_details"),
+            url(r"^(?P<resource_name>%s)/request_money%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('request_money'), name="api_request_money"),
 
     ]
 
@@ -158,6 +161,20 @@ class UserResource(ModelResource):
             #print(response_text)
             return self.create_response(request, {"success": True,
                                                   "details": "OTP sent successfully"})
+
+    def request_money(self, request, **kwargs):
+        if request.user.is_authenticated():
+            data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+            mobile_number = data.get("mobile")
+            amount = data.get("amount")
+            message = data.get("message")
+
+            return self.create_response(request, {'success':True,
+                                                  'details':"request sent succesflly"})
+        else:
+            return self.create_response(request, {'success': False,
+                                                  "details": "user not authenticated please login",
+                                                  "error_code": 111})
 
     def isLoggedIn(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
