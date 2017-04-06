@@ -4,6 +4,7 @@ from django.db import models
 
 # Create your models here.
 from users.models import User, BankInfo, BankAccountDetails, UpiDetails
+from vendors.models import Bill, Stores
 
 
 class Transaction(models.Model):
@@ -29,6 +30,9 @@ class Transaction(models.Model):
     transaction_state = models.SmallIntegerField(choices=TRANSACTION_STATE)
     transaction_state_details = models.CharField(max_length=500, null=True, blank=True)
     amount = models.IntegerField(null=False)
+    bill = models.ForeignKey(Bill, null=True)
+    text = models.CharField(max_length=150, blank=True, null=True)
+    store = models.ForeignKey(Stores, null=True, blank=True)
 
 
 class AccountDetails(models.Model):
@@ -37,17 +41,19 @@ class AccountDetails(models.Model):
     holder_name = models.CharField(max_length=50, null=False)
     account_no = models.CharField(max_length=30, null=False)
     ifsc_code = models.CharField(max_length=30, null=False)
-    bank = models.ForeignKey(BankInfo, null=True)
+    bank = models.ForeignKey(BankInfo, null=True, default=1)
 
 
 class Upi(models.Model):
-    sender_upi = models.ForeignKey(UpiDetails, on_delete=models.CASCADE)
+    sender_upi = models.ForeignKey(UpiDetails, on_delete=models.CASCADE, null=True)
     receiver_upi_adderss = models.CharField(max_length=100, null=False)
+    transaction = models.ForeignKey(Transaction, null=True)
 
 
 class Mobile(models.Model):
-    sender_account = models.ForeignKey(BankAccountDetails, on_delete=models.SET_NULL, null=True)
-    receiver_account = models.ForeignKey(BankAccountDetails, related_name='receiver_account', on_delete=models.SET_NULL, null=True)
+    sender_account = models.ForeignKey(BankAccountDetails, null=True)
+    receiver_account = models.ForeignKey(BankAccountDetails, related_name='receiver_account', null=True)
+    transaction = models.ForeignKey(Transaction, null=True)
 
 
 

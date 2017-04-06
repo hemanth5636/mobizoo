@@ -67,6 +67,8 @@ class Bill(models.Model):
     store = models.ForeignKey(Stores, on_delete=models.CASCADE, null=True)
     time_stamp = models.DateTimeField(auto_now=True)
     bill_type = models.SmallIntegerField(choices=BILL_TYPES, default=0)
+    text = models.CharField(max_length=150, null=True, blank=True)
+    bill_category = models.CharField(max_length=80, null=True, blank=True)
 
 
 class BillingItems(models.Model):

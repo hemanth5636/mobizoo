@@ -86,7 +86,7 @@ class ContactInfoResource(ModelResource):
 
 
 class BillResource(ModelResource):
-    sender = fields.ForeignKey(UserResource, 'sender', null=True, full=True)
+    sender = fields.ForeignKey(UserResource, 'sender', null=True, full=False)
     receiver = fields.ForeignKey(UserResource, 'receiver', null=True, full=True)
     store = fields.ForeignKey(StoreResource, 'store', null=True, full=True)
 
@@ -111,6 +111,8 @@ class BillResource(ModelResource):
             bill = BillingItemsResource()
             items = []
             obj = BillingItems.objects.filter(bill=bundle.obj)
+            total_amount = 0
+            total_items = 0
             for o in obj:
                 bun = bill.build_bundle(obj=o)
                 bun = bill.full_dehydrate(bundle=bun)
@@ -127,7 +129,7 @@ class BillResource(ModelResource):
                 self.wrap_view('pay_bill'), name="api_pay_bill"),
         ]
 
-    
+
 class BillingItemsResource(ModelResource):
     bill = fields.ForeignKey(BillResource, 'bill', null=True, full=False)
 
