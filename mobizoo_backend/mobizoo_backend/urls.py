@@ -21,5 +21,5 @@ urlpatterns = [
     url(r'^',include('users.urls')),
     url(r'^',include('vendors.urls')),
     #url(r'^',include('vendors.urls')),
-    #url(r'^',include('payments.urls'))
+    url(r'^',include('payments.urls'))
 ]

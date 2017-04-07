@@ -14,10 +14,10 @@ from vendors.models import CompanyCategory, Vendor, ContactInfo, Bill, BillingIt
 
 
 class TransactionResource(ModelResource):
-    bill = fields.ForeignKey(BillResource, null=True, full=False)
+    bill = fields.ForeignKey(BillResource, 'bill', null=True, full=False)
     sender = fields.ForeignKey(UserResource, 'sender', null=True, full=False)
     receiver = fields.ForeignKey(UserResource, 'receiver', null=True, full=False)
-    store = fields.ForeignKey(StoreResource, null=True, full=True)
+    store = fields.ForeignKey(StoreResource, 'store',  null=True, full=True)
     class Meta:
         queryset = Transaction.objects.all()
         resource_name = 'transaction'
@@ -57,6 +57,7 @@ class TransactionResource(ModelResource):
             transcation.transaction_type = 2
             transcation.amount = bill.total_amount
             transcation.bill = bill
+            transcation.store = bill.store
             transcation.transaction_state = 1
 
             mobile = Mobile()
@@ -165,9 +166,9 @@ class TransactionResource(ModelResource):
 
 
 class AccountDetailsResource(ModelResource):
-    sender_bank = fields.ForeignKey(BankAccountDetailsResource, null=True, full=True)
-    transaction = fields.ForeignKey(TransactionResource, null=True, full=False)
-    bank = fields.ForeignKey(BankInfoResource, null=True, full=False)
+    sender_bank = fields.ForeignKey(BankAccountDetailsResource,'sender_bank', null=True, full=True)
+    transaction = fields.ForeignKey(TransactionResource, 'transaction', null=True, full=False)
+    bank = fields.ForeignKey(BankInfoResource, 'bank', null=True, full=False)
 
     class Meta:
         queryset = AccountDetails.objects.all()
@@ -187,7 +188,7 @@ class AccountDetailsResource(ModelResource):
 
 
 class UpiResource(ModelResource):
-    transaction = fields.ForeignKey(TransactionResource, null=True, full=False)
+    transaction = fields.ForeignKey(TransactionResource, 'transaction', null=True, full=False)
 
     class Meta:
         queryset = Upi.objects.all()
@@ -205,8 +206,8 @@ class UpiResource(ModelResource):
 
 
 class MobileResource(ModelResource):
-    transaction = fields.ForeignKey(TransactionResource, null=True, full=False)
-    sender_account = fields.ForeignKey(BankAccountDetails, null=True, full=True)
+    transaction = fields.ForeignKey(TransactionResource, 'transaction', null=True, full=False)
+    sender_account = fields.ForeignKey(BankAccountDetails, 'sender_bank', null=True, full=True)
     receiver_account = fields.ForeignKey(BankAccountDetails, 'receiver_account', null=True, full=True)
 
     class Meta:
