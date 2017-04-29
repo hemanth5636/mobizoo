@@ -16,7 +16,7 @@ from vendors.models import CompanyCategory, Vendor, ContactInfo, Bill, BillingIt
 class TransactionResource(ModelResource):
     bill = fields.ForeignKey(BillResource, 'bill', null=True, full=False)
     sender = fields.ForeignKey(UserResource, 'sender', null=True, full=False)
-    receiver = fields.ForeignKey(UserResource, 'receiver', null=True, full=False)
+    receiver = fields.ForeignKey(UserResource, 'receiver', null=True, full=True)
     store = fields.ForeignKey(StoreResource, 'store',  null=True, full=True)
     class Meta:
         queryset = Transaction.objects.all()
@@ -95,10 +95,10 @@ class TransactionResource(ModelResource):
                 transaction = Transaction()
                 transaction.sender = request.user
                 try:
-                    receiver = User.objects.get(mobile_number=mobile_number)
+                    receiver = User.objects.get(mobile=mobile_number)
                 except User.DoesNotExist:
                     return self.create_response(request, {"success": False,
-                                                          "status_code": 101,
+                                                          "status_code": 102,
                                                           'details':"given mobile number is not associated with any account"})
                 transaction.receiver = receiver
                 transaction.amount = amount

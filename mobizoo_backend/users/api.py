@@ -293,7 +293,7 @@ class BankAccountDetailsResource(ModelResource):
         if request.user.is_authenticated():
             return super(BankAccountDetailsResource, self).get_object_list(request).filter(user=request.user)
         else:
-            return super(BankAccountDetailsResource, self).get_object_list(request)
+            return None
 
     def override_urls(self):
         return [

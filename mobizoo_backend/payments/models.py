@@ -24,7 +24,7 @@ class Transaction(models.Model):
                          (PROCESSING, 'processing'))
 
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
-    receiver = models.ForeignKey(User, related_name='receiver')
+    receiver = models.ForeignKey(User, related_name='receiver', null=True)
     transaction_type = models.SmallIntegerField(choices=TRANSACTION_TYPES)
     created_on = models.DateTimeField(auto_now=True)
     transaction_state = models.SmallIntegerField(choices=TRANSACTION_STATE)
