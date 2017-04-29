@@ -74,7 +74,7 @@ class UserResource(ModelResource):
 
     def set_pin(self, request, **kwargs):
         if request.user.is_authenticated() :
-            user = User.objects.get(user=request.user)
+            user = User.objects.get(id=request.user.id)
             data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
             user.pin = data.get('pin')
             user.save()
@@ -85,7 +85,7 @@ class UserResource(ModelResource):
 
     def verify_pin(self, request, **kwargs):
         if request.user.is_authenticated():
-            user = User.objects.get(user=request.user)
+            user = User.objects.get(id=request.user.id)
             data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
             if user.pin == data.get('pin') :
                 return self.create_response(request, {"success":True})
