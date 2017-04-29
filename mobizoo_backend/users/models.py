@@ -43,7 +43,7 @@ class User(AbstractBaseUser):
     created_by = models.SmallIntegerField(null=True)
     created_on = models.DateTimeField(null=True, auto_now=True)
     profile_pic_url = models.CharField(max_length=200, null=True, blank=True)
-
+    pin = models.CharField(max_length=4, blank=True, null=True)
     USERNAME_FIELD = 'email'
 
     def save(self, *args, **kwargs):
@@ -62,6 +62,7 @@ class UpiDetails(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     virtual_address = models.CharField(max_length=150, null=False)
     created_on = models.DateTimeField(auto_now=True)
+
 
 
 class BankInfo(models.Model):

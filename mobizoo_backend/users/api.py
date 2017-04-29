@@ -63,8 +63,37 @@ class UserResource(ModelResource):
             url(r"^(?P<resource_name>%s)/request_money%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('request_money'), name="api_request_money"),
+            url(r"^(?P<resource_name>%s)/set_pin%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('set_pin'), name="api_set_pin"),
+            url(r"^(?P<resource_name>%s)/verify_pin%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('verify_pin'), name="api_verify_pin"),
 
     ]
+
+    def set_pin(self, request, **kwargs):
+        if request.user.is_authenticated() :
+            user = User.objects.get(user=request.user)
+            data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+            user.pin = data.get('pin')
+            user.save()
+            return self.create_response(request, {"success":True})
+        else:
+            return self.create_response(request, {"success":False,
+                                                  "details":"user not authenticated"})
+
+    def verify_pin(self, request, **kwargs):
+        if request.user.is_authenticated():
+            user = User.objects.get(user=request.user)
+            data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+            if user.pin == data.get('pin') :
+                return self.create_response(request, {"success":True})
+            else:
+                return self.create_response(request, {'success':False, 'details':"Incorrect Pin Entered"})
+        else:
+            return self.create_response(request, {'success':False,
+                                                  'details':"user not authenticated"})
 
     def fetch_user_details(self, request, **kwargs):
         if request.session.test_cookie_worked():
