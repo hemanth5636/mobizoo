@@ -33,9 +33,9 @@ class TransactionResource(ModelResource):
             'sender': ALL_WITH_RELATIONS,
             'receiver': ALL_WITH_RELATIONS
         }
-        
+
     def get_object_list(self, request):
-        return super(TransactionResource, self).get_object_list(request).filter(Q(sender=request.user)|Q(receiver=request.user))
+        return super(TransactionResource, self).get_object_list(request).filter(Q(sender=request.user)|Q(receiver=request.user)).order_by("-created_on")
 
 
     def override_urls(self):
