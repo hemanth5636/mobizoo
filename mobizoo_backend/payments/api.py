@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.db.models import Q
 from tastypie import fields
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
@@ -15,7 +16,7 @@ from vendors.models import CompanyCategory, Vendor, ContactInfo, Bill, BillingIt
 
 class TransactionResource(ModelResource):
     bill = fields.ForeignKey(BillResource, 'bill', null=True, full=False)
-    sender = fields.ForeignKey(UserResource, 'sender', null=True, full=False)
+    sender = fields.ForeignKey(UserResource, 'sender', null=True, full=True)
     receiver = fields.ForeignKey(UserResource, 'receiver', null=True, full=True)
     store = fields.ForeignKey(StoreResource, 'store',  null=True, full=True)
     class Meta:
@@ -32,7 +33,9 @@ class TransactionResource(ModelResource):
             'sender': ALL_WITH_RELATIONS,
             'receiver': ALL_WITH_RELATIONS
         }
-
+        
+    def get_object_list(self, request):
+        return super(TransactionResource, self).get_object_list(request).filter(Q(sender=request.user)|Q(receiver=request.user))
 
 
     def override_urls(self):
