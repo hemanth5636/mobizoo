@@ -69,8 +69,19 @@ class UserResource(ModelResource):
             url(r"^(?P<resource_name>%s)/verify_pin%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('verify_pin'), name="api_verify_pin"),
+            url(r"^(?P<resource_name>%s)/get_upi_address%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('get_upi_address'), name="api_get_upi_address"),
 
     ]
+
+    def get_upi_address(self, request, **kwargs):
+        if request.user.is_authenticated():
+            user = UpiDetails.objects.get(user=request.user)
+            return self.create_response(request, {"success":True,
+                                                  "id":user.virtual_address})
+        else:
+            return self.create_response(request, {"success":False})
 
     def set_pin(self, request, **kwargs):
         if request.user.is_authenticated() :
