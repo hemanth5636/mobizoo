@@ -54,6 +54,7 @@ class TransactionResource(ModelResource):
             bill = Bill.objects.get(id=data.get('bill_id'))
             bill.sender = request.user
             bill.save()
+
             transcation = Transaction()
             transcation.sender = request.user
             transcation.receiver = bill.store.vendor.user
@@ -73,6 +74,16 @@ class TransactionResource(ModelResource):
                 return self.create_response(request, {"success":False,
                                                       "status_code":101,
                                                       "details": "No active bank accounts or please link atleast one bank account"})
+            if bill.total_amount > bank.balance:
+                return self.create_response(request, {"success":False,
+                                                      "status_code":201,
+                                                      "details":"Insufficient Funds"})
+            else:
+                bank.balance = bank.balance-bill.total_amount
+                bank1 = BankAccountDetails.objects.get(user=transcation.receiver, account_state=1)
+                bank.save()
+                bank1.balance = bank1.balance+bill.total_amount
+                bank1.save()
             transcation.save()
             bank = BankAccountDetails.objects.get(user=transcation.receiver, account_state=1)
             mobile.receiver_account = bank
@@ -114,8 +125,17 @@ class TransactionResource(ModelResource):
                 try:
                     bank = BankAccountDetails.objects.get(user=request.user, account_state=1)
                     mobile.sender_account = bank
+                    if transaction.amount > bank.balance:
+                        return self.create_response(request, {"success": False,
+                                                              "status_code": 201,
+                                                              "details": "Insufficient Funds"})
+                    else:
+                        bank.balance = bank.balance-transaction.amount
+                        bank.save()
                     bank = BankAccountDetails.objects.get(user=transaction.receiver, account_state=1)
                     mobile.receiver_account = bank
+                    bank.balance = bank.balance+transaction.amount
+                    bank.save()
                 except BankAccountDetails.DoesNotExist:
                     return self.create_response(request, {"success": False,
                                                           "status_code": 101,

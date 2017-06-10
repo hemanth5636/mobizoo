@@ -51,7 +51,7 @@ class Upi(models.Model):
 
 
 class Mobile(models.Model):
-    sender_account = models.ForeignKey(BankAccountDetails, null=True)
+    sender_account = models.ForeignKey(BankAccountDetails, related_name='sender_account',null=True)
     receiver_account = models.ForeignKey(BankAccountDetails, related_name='receiver_account', null=True)
     transaction = models.ForeignKey(Transaction, null=True)
 

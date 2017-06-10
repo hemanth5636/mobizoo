@@ -58,13 +58,6 @@ class User(AbstractBaseUser):
         return self.email
 
 
-class UpiDetails(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    virtual_address = models.CharField(max_length=150, null=False)
-    created_on = models.DateTimeField(auto_now=True)
-
-
-
 class BankInfo(models.Model):
     name = models.CharField(max_length=100)
     details = models.CharField(max_length=150)
@@ -76,9 +69,18 @@ class BankAccountDetails(models.Model):
     ACCOUNT_STATE = ((INACTIVE, 'inactive'),
                      (ACTIVE, 'active'))
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    mobile = models.CharField(max_length=10, null=True)
     bank = models.ForeignKey(BankInfo, on_delete=models.CASCADE)
     account_no = models.CharField(max_length=11, null=False)
     ifsc_code = models.CharField(max_length=50, null=False)
     holder_name = models.CharField(max_length=50, null=False)
+    balance = models.IntegerField(default=90000)
     account_state = models.SmallIntegerField(choices=ACCOUNT_STATE, default=0)
+
+
+class UpiDetails(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    virtual_address = models.CharField(max_length=150, null=False)
+    created_on = models.DateTimeField(auto_now=True)
+    bank_account = models.ForeignKey(BankAccountDetails, null=True)

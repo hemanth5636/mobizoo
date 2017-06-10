@@ -72,8 +72,31 @@ class UserResource(ModelResource):
             url(r"^(?P<resource_name>%s)/get_upi_address%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('get_upi_address'), name="api_get_upi_address"),
+            url(r"^(?P<resource_name>%s)/create_va%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('create_va'), name="api_create_va"),
 
     ]
+
+    def create_va(self, request, **kwargs):
+        if request.user.is_authenticated():
+            data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+            user = User.objects.get(user=request.user)
+            user.first_name = data.get("first_name")
+            user.mobile = data.get('mobile')
+            user.last_name = data.get('last_name')
+            user.save()
+            upi = UpiDetails()
+            upi.user = user
+            upi.bank_account = BankAccountDetails.objects.get(data.get('bank_account_id'))
+            upi.virtual_address = user.first_name+str(random.randint(0, 9991))+"@yesbank"
+            upi.save()
+
+            upi_bundle = UpiDetailsResource().full_dehydrate(UpiDetailsResource().build_bundle(obj=upi, request=request))
+            self.create_response()
+        else:
+            return self.create_response(request, {"success": False,
+                                                  "details": "User not authenticated"})
 
     def get_upi_address(self, request, **kwargs):
         if request.user.is_authenticated():
@@ -133,19 +156,30 @@ class UserResource(ModelResource):
         #return (fr)
 
     def verify_otp(self, request, **kwargs):
-        self.method_check(request, allowed=['get'])
+        self.method_check(request, allowed=['post'])
+        data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
         if request.user.is_authenticated():
             user=None
             try:
-                user = User.objects.get(user=request.user)
+                user = User.objects.get(id=request.user.id)
             except User.DoesNotExist:
                 return self.create_response(request, {"success":False,
                                                       "details":"unauthorised user"})
-            if user.otp == request.GET.get("otp"):
+            if user.otp == data.get('otp'):
                 user.otp_verified = True
                 user.save()
+                upi = UpiDetails()
+                upi.user = user
+                upi.bank_account = BankAccountDetails.objects.get(id=data.get('bank_account_id'))
+                upi.virtual_address = user.first_name + str(random.randint(0, 9991)) + "@yesbank"
+                upi.save()
+
+                upi_bundle = UpiDetailsResource().full_dehydrate(
+                    UpiDetailsResource().build_bundle(obj=upi, request=request))
                 return self.create_response(request, {"success":True,
-                                                      "user": UserResource().full_dehydrate(UserResource().build_bundle(obj=user))})
+
+                                                      "upi": upi_bundle}
+                                            )
             else:
                 return self.create_response(request, {"success":False,
                                                       "details":"Incorrect OTP"})
@@ -317,7 +351,7 @@ class BankAccountDetailsResource(ModelResource):
 
     class Meta:
         queryset = BankAccountDetails.objects.all()
-        resource_name = 'bank_details'
+        resource_name = 'bank_account_details'
         list_allowed_methods = ['get', 'post', 'patch', 'put', 'delete']
         authorization = Authorization()
         include_resource_uri = True
@@ -326,14 +360,15 @@ class BankAccountDetailsResource(ModelResource):
         filtering = {
             'id': ALL,
             'user': ALL_WITH_RELATIONS,
-            'bank': ALL_WITH_RELATIONS
+            'bank': ALL_WITH_RELATIONS,
+            'mobile': ALL
         }
 
     def get_object_list(self, request):
         if request.user.is_authenticated():
             return super(BankAccountDetailsResource, self).get_object_list(request).filter(user=request.user)
         else:
-            return None
+            return super(BankAccountDetailsResource, self).get_object_list(request)
 
     def override_urls(self):
         return [
@@ -367,6 +402,7 @@ class BankAccountDetailsResource(ModelResource):
 
 class UpiDetailsResource(ModelResource):
     user = fields.ForeignKey(UserResource, 'user', full=True)
+    bank_account = fields.ForeignKey(BankAccountDetailsResource, 'bank_account', full=True, null=True)
 
     class Meta:
         queryset = UpiDetails.objects.all()
@@ -382,4 +418,9 @@ class UpiDetailsResource(ModelResource):
 
         }
 
+    def get_object_list(self, request):
+        if request.user.is_authenticated():
+            return super(UpiDetailsResource, self).get_object_list(request).filter(user=request.user)
+        else:
+            return super(UpiDetailsResource, self).get_object_list(request)
 
