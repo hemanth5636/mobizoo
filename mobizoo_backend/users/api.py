@@ -346,7 +346,7 @@ class BankInfoResource(ModelResource):
 
 
 class BankAccountDetailsResource(ModelResource):
-    user = fields.ForeignKey(UserResource, 'user', full=False)
+    user = fields.ForeignKey(UserResource, 'user', full=False, null=True)
     bank = fields.ForeignKey(BankInfoResource, 'bank', full=True)
 
     class Meta:
@@ -365,7 +365,7 @@ class BankAccountDetailsResource(ModelResource):
         }
 
     def get_object_list(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated() and request.GET.get("type") == "user":
             return super(BankAccountDetailsResource, self).get_object_list(request).filter(user=request.user)
         else:
             return super(BankAccountDetailsResource, self).get_object_list(request)
