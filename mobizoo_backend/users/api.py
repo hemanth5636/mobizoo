@@ -155,6 +155,7 @@ class UserResource(ModelResource):
         #fr = f.read()
         #return (fr)
 
+
     def verify_otp(self, request, **kwargs):
         self.method_check(request, allowed=['post'])
         data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
@@ -210,7 +211,8 @@ class UserResource(ModelResource):
 
     def request_otp(self, request, **kwargs):
         if request.user.is_authenticated():
-
+            return self.create_response(request, {"success": True,
+                                                  "details": "OTP sent successfully"})
             user = User.objects.get(email=request.user.email)
             if user.mobile is None:
                 return self.create_response(request, {"success": False,
