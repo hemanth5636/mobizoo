@@ -211,8 +211,7 @@ class UserResource(ModelResource):
 
     def request_otp(self, request, **kwargs):
         if request.user.is_authenticated():
-            return self.create_response(request, {"success": True,
-                                                  "details": "OTP sent successfully"})
+
             user = User.objects.get(email=request.user.email)
             if user.mobile is None:
                 return self.create_response(request, {"success": False,
@@ -231,6 +230,8 @@ class UserResource(ModelResource):
             print(user.mobile)
             text = "Your OTP is " + str(user.otp)
             to = "91"+str(user.mobile)
+            return self.create_response(request, {"success": True,
+                                                  "details": "OTP sent successfully"})
             res = self.sendSMS(numbers=to, sender="hema", message=text)
             print(res.data)
             #response_text = requests.post("https://rest.nexmo.com/sms/json", data=post_data)
