@@ -188,7 +188,7 @@ class UserResource(ModelResource):
     def resend_otp(self, request, **kwargs):
         if request.user.is_authenticated():
             user=None
-            user = User.objects.get(user=request.user)
+            user = User.objects.get(id=request.user.id)
             if user.mobile is None:
                 return self.create_response(request, {"success": False,
                                                       "details": "please upload your mobile number"})
@@ -200,14 +200,19 @@ class UserResource(ModelResource):
                 "api_secret": "5a973c78f71b730a",
                 "to": user.mobile,
                 "from": "Mobizoo",
-                "text": "Your OTP is "+user.otp
+                "text": "Your OTP is "+str(user.otp)
             }
             text = "Your OTP is "+str(user.otp)
+            return self.create_response(request, {'success': True,
+                                                  "details": "Otp sent successfully"})
             res = self.sendSMS(user.mobile, 'Jims Autos', text)
             print(res.data)
             #response_text = requests.post("https://rest.nexmo.com/sms/json", data=post_data)
             return self.create_response(request, {"success": True,
                                                   "details": "OTP sent successfully"})
+        else:
+            return self.create_response(request, {'success': False,
+                                                  'details': "user not authenticated"})
 
     def request_otp(self, request, **kwargs):
         if request.user.is_authenticated():
