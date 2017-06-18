@@ -239,7 +239,8 @@ class UserResource(ModelResource):
             return self.create_response(request, {"success": True,
                                                   "details": "OTP sent successfully"})
         else:
-            return
+            return self.create_response(request, {"success":False,
+                                                  "details":"user not authenticated"})
 
     def request_money(self, request, **kwargs):
         if request.user.is_authenticated():
