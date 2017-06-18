@@ -211,9 +211,9 @@ class UserResource(ModelResource):
 
     def request_otp(self, request, **kwargs):
         if request.user.is_authenticated():
-
             user = User.objects.get(email=request.user.email)
             if user.mobile is None:
+                print(user.mobile)
                 return self.create_response(request, {"success": False,
                                                       "details": "please upload your mobile number"})
             user.otp = random.randint(100000, 999999)
@@ -238,6 +238,8 @@ class UserResource(ModelResource):
             #print(response_text)
             return self.create_response(request, {"success": True,
                                                   "details": "OTP sent successfully"})
+        else:
+            return
 
     def request_money(self, request, **kwargs):
         if request.user.is_authenticated():
