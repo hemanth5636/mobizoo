@@ -192,7 +192,7 @@ class UserResource(ModelResource):
             if user.mobile is None:
                 return self.create_response(request, {"success": False,
                                                       "details": "please upload your mobile number"})
-            user.otp = random.randint(100000, 999999)
+            user.otp = random.randint(1000, 9999)
             user.otp_verified = False
             user.save()
             post_data = {
