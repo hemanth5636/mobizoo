@@ -74,15 +74,15 @@ class TransactionResource(ModelResource):
                 return self.create_response(request, {"success":False,
                                                       "status_code":101,
                                                       "details": "No active bank accounts or please link atleast one bank account"})
-            if bill.total_amount > bank.balance:
+            if int(bill.total_amount) > int(bank.balance):
                 return self.create_response(request, {"success":False,
                                                       "status_code":201,
                                                       "details":"Insufficient Funds"})
             else:
-                bank.balance = bank.balance-bill.total_amount
+                bank.balance = int(bank.balance)-int(bill.total_amount)
                 bank1 = BankAccountDetails.objects.get(user=transcation.receiver, account_state=1)
                 bank.save()
-                bank1.balance = bank1.balance+bill.total_amount
+                bank1.balance = int(bank1.balance)+int(bill.total_amount)
                 bank1.save()
             transcation.save()
             bank = BankAccountDetails.objects.get(user=transcation.receiver, account_state=1)
@@ -119,28 +119,33 @@ class TransactionResource(ModelResource):
                 transaction.text = message
                 transaction.transaction_type = 2
                 transaction.transaction_state = 1
-                transaction.save()
+
                 mobile = Mobile()
                 mobile.transaction = transaction
                 try:
                     bank = BankAccountDetails.objects.get(user=request.user, account_state=1)
                     mobile.sender_account = bank
-                    if transaction.amount > bank.balance:
+                    a=transaction.amount
+                    aa=bank.balance
+                    s=int(aa)-int(a)
+                    if s<0:
+                        print(transaction.amount)
+                        print(bank.balance)
                         return self.create_response(request, {"success": False,
                                                               "status_code": 201,
                                                               "details": "Insufficient Funds"})
                     else:
-                        bank.balance = bank.balance-transaction.amount
+                        bank.balance = int(bank.balance)-int(transaction.amount)
                         bank.save()
                     bank = BankAccountDetails.objects.get(user=transaction.receiver, account_state=1)
                     mobile.receiver_account = bank
-                    bank.balance = bank.balance+transaction.amount
+                    bank.balance = int(bank.balance)+int(transaction.amount)
                     bank.save()
                 except BankAccountDetails.DoesNotExist:
                     return self.create_response(request, {"success": False,
                                                           "status_code": 101,
                                                           "details": "No active bank accounts or please link atleast one bank account"})
-
+                transaction.save()
                 mobile.save()
                 bundle = TransactionResource().build_bundle(obj=transaction)
                 bundle = TransactionResource().full_dehydrate(bundle=bundle)
@@ -163,6 +168,7 @@ class TransactionResource(ModelResource):
                 account_details.transaction = transaction
                 try:
                     account_details.sender_bank = BankAccountDetails.objects.get(user=request.user,account_state=BankAccountDetails.ACTIVE)
+                    account_details.sender_bank.balance = account_details.sender_bank.balance-amount
                 except BankAccountDetails.DoesNotExist:
                     return self.create_response(request, {"success": False,
                                                           "status_code": 101,
