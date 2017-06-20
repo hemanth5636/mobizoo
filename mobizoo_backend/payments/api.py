@@ -168,7 +168,8 @@ class TransactionResource(ModelResource):
                 account_details.transaction = transaction
                 try:
                     account_details.sender_bank = BankAccountDetails.objects.get(user=request.user,account_state=BankAccountDetails.ACTIVE)
-                    account_details.sender_bank.balance = account_details.sender_bank.balance-amount
+                    account_details.sender_bank.balance = int(account_details.sender_bank.balance)-int(amount)
+
                 except BankAccountDetails.DoesNotExist:
                     return self.create_response(request, {"success": False,
                                                           "status_code": 101,
