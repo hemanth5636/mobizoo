@@ -171,8 +171,10 @@ class UserResource(ModelResource):
                 user.save()
                 upi = UpiDetails()
                 upi.user = user
-                upi.bank_account = BankAccountDetails.objects.get(id=data.get('bank_account_id'))
-                upi.bank_account.user = request.user
+                b = BankAccountDetails.objects.get(id=data.get('bank_account_id'))
+                upi.bank_account = b
+                b.user = request.user
+                b.save()
                 upi.virtual_address = user.first_name + str(random.randint(0, 9991)) + "@yesbank"
                 upi.save()
 
